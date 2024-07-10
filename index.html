@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screw Card</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #282c34;
+            color: #A327F1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h1,
+        h2 {
+            color: #ffffff;
+        }
+
+        #players-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .card {
+            background-color: #20232a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            width: 400px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: left;
+            box-sizing: border-box;
+        }
+
+        .card input,
+        .new-player input {
+            margin: 10px 0;
+            padding: 10px;
+            width: calc(100%);
+            border: none;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .card button,
+        .new-player button {
+            margin: 5px 0;
+            padding: 10px;
+            width: 100%;
+            background-color: #A327F1;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: large;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .card .round {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .winner {
+            color: #A327F1;
+            font-weight: bold;
+            animation: myanimation 5s infinite;
+        }
+
+        @keyframes myanimation {
+            0% {
+                color: #A327F1;
+            }
+
+            25% {
+                color: #DEF7E5;
+            }
+
+            50% {
+                color: #0094F6;
+            }
+
+            75% {
+                color: #CC4180;
+            }
+
+            100% {
+                color: #A327F1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h2 id="winner-message" class="winner"></h2>
+    <h1>Screw Game Points Tracker</h1>
+    <div id="players-container"></div>
+    <div class="new-player card">
+        <input type="text" id="player-name" placeholder="Enter player's name">
+        <button onclick="addPlayer()">Add Player</button>
+    </div>
+
+    <script>
+        const maxRounds = 4;
+
+        function addPlayer() {
+            const playerName = document.getElementById('player-name').value;
+            if (!playerName) {
+                alert('Please enter the player\'s name.');
+                return;
+            }
+
+            const container = document.getElementById('players-container');
+            const playerDiv = document.createElement('div');
+            playerDiv.className = 'card';
+            playerDiv.innerHTML = `
+                <h2>${playerName}</h2>
+                ${Array.from({ length: maxRounds }, (_, i) => `
+                    <div class="round">
+                        <span>Round:${i + 1}</span>
+                        <input type="number" class="points-input" placeholder="Enter points" oninput="updateTotal(this)">
+                    </div>
+                `).join('')}
+                <p>Total: <span class="total-points">0</span></p>
+                <button onclick="penaltyPoints(this)">+ 5 Points</button>
+            `;
+            container.appendChild(playerDiv);
+            document.getElementById('player-name').value = '';
+        }
+
+        function updateTotal(input) {
+            const playerDiv = input.closest('.card');
+            const pointsInputs = playerDiv.querySelectorAll('.points-input');
+            let totalPoints = 0;
+            pointsInputs.forEach(input => {
+                totalPoints += parseInt(input.value) || 0;
+            });
+            playerDiv.querySelector('.total-points').textContent = totalPoints;
+            checkWinner(totalPoints, playerDiv.querySelector('h2').textContent);
+        }
+
+        function penaltyPoints(button) {
+            const playerDiv = button.closest('.card');
+            const totalPointsSpan = playerDiv.querySelector('.total-points');
+            let totalPoints = parseInt(totalPointsSpan.textContent);
+            totalPoints += 5;
+            totalPointsSpan.textContent = totalPoints;
+            checkWinner(totalPoints, playerDiv.querySelector('h2').textContent);
+        }
+
+        function checkWinner(points, playerName) {
+            const winnerMessage = document.getElementById('winner-message');
+            if (points > 50) {
+                winnerMessage.textContent = `${playerName} lost the game by exceeding 50 points!`;
+            }
+        }
+    </script>
+</body>
+
+</html>
