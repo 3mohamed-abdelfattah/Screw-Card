@@ -164,7 +164,7 @@
         function checkWinner(points, playerName) {
             const winnerMessage = document.getElementById('winner-message');
             if (points > 50) {
-                winnerMessage.textContent = `${playerName} lost the game by exceeding 50 points!`;
+                winnerMessage.textContent = alert(`${playerName} lost the game by exceeding 50 points!`);
             }
         }
     </script>
